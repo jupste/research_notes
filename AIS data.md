@@ -2,14 +2,39 @@
 attachments: [Clipboard_2021-07-05-10-09-49.png]
 title: AIS data
 created: '2021-07-05T06:41:12.406Z'
-modified: '2021-07-05T11:04:58.902Z'
+modified: '2021-07-08T08:12:50.948Z'
 ---
 
 # AIS data
 
 AIS data usually contains the following fields:
 
-![](@attachment/Clipboard_2021-07-05-10-09-49.png)
+| **AIS DATA  (dynamic)** |             |          |                                                                                                                     |
+|---------------------|-------------|----------|---------------------------------------------------------------------------------------------------------------------|
+| **Field**               | **Type**        | **Required** | **Wrangling operations needed**                                                                                         |
+| shipid (MMSI)       | string      | yes      | check no nulls, check no dublicate time/shipid pair. Not really a unique identifier, but dublicates highly unlikely |
+| timestamp           | datetime    | yes      | check no nulls, check no dublicate time/shipid pair                                                                 |
+| longitude           | float       | yes      | check no nulls, check values between 90, -90, check latlons not on land                                             |
+| latitude            | float       | yes      | check no nulls, check values between 180, -180, check latlons not on land                                           |
+| heading             | float       | yes?     | if missing calculate from previous entries, values between 0, 360.                                                  |
+| speed               | float       | no       | check outliers                                                                                                      |
+| navigational status | string/int  | no       | probably none, maybe figure out from ship movements if missing                                                      |
+|                     |             |          |                                                                                                                     |
+|                     |             |          |                                                                                                                     |
+|                     |             |          |                                                                                                                     |
+|                     |             |          |                                                                                                                     |
+| **AIS DATA  (static)**  |             |          |                                                                                                                     |
+| **Field**               | **Type**        | **Required** | **Wrangling operations needed**                                                                                         |
+| shipid (IMO)        | string      | yes      | check if matches call sign and shipname                                                                             |
+| call sign           | string      | yes      | check if matches id                                                                                                 |
+| name                | string      | yes?     | probably none, maybe check spelling errors                                                                          |
+| vesseltype          | int         | no       | probably none, maybe map to string type vesseltype name                                                             |
+| dimensions          | float array | no       | probably none, maybe check if not an outlier                                                                        |
+| system location     | string      | no       | none                                                                                                                |
+| navigational system | string      | no       | check if in list                                                                                                    |
+| destination         | string      | no       | check spelling errors                                                                                               |
+| ETA                 | datetime    | no       | check spelling errors, calculate a more accurate time based on nav data                                             |
+| draught             | float       | no       | none                                                                                                                |
 
 
 By doing some analysis on the data I have also found out that the latitudes and longitudes also jump from place to place in an instance. For example I came across one AIS dataset where several vessels jumped from US east coast to US west coast at regular intervals several times per day. Ship identifiers should be unique so this is probably some kind of programming error. Ship MMSIs are known to cause issues, but I have found no definite reason for this behaviour.
